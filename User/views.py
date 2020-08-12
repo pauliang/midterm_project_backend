@@ -55,7 +55,7 @@ def user_register(request):
         return JsonResponse("Invalid method", safe=False)
 
 
-@login_required(login_url='/User/login/')
+# @login_required(login_url='/User/login/')
 def profile_edit(request, id):
     user = User.objects.get(id=id)
     # user_id 是 OneToOneField 自动生成的字段
@@ -67,25 +67,29 @@ def profile_edit(request, id):
     if request.method == 'POST':
         # 验证用户是否是本人
         if request.user != user:
-            return HttpResponse("权限不足!")
+            return JsonResponse("权限不足!", safe=False)
 
-        profile_form = ProfileForm(request.POST, request.FILES)
-        if profile_form.is_valid():
+        # profile_form = ProfileForm(request.POST, request.FILES)
+        # if profile_form.is_valid():
             # 取得清洗后的合法数据
-            data = profile_form.cleaned_data
-            profile.phone = data['phone']
-            profile.introduction = data['introduction']
-            # 如果图片存在FILES中
-            if 'img' in request.FILES:
-                profile.img = data["img"]
 
-            profile.save()
-            return render(request, 'index.html', locals())
-        else:
-            return HttpResponse("修改表单有误，请重新输入!")
-    elif request.method == 'GET':
-        profile_form = ProfileForm()
-        context = {'profile_form': profile_form, 'profile': profile, 'user': user}
-        return render(request, 'edit.html', context)
+        phone = request.POST.get('phone')
+        intro = request.POST.get('introduction')
+        gender = request.POST.get('gender')
+        hobby = request.POST.get('hobby')
+        age = request.POST.get('age')
+
+        # data = profile_form.cleaned_data
+        profile.phone = phone
+        profile.introduction = intro
+        profile.age = age
+        profile.gender = gender
+        profile.hobby = hobby
+        # 如果图片存在FILES中
+        # if 'img' in request.FILES:
+            # profile.img = data["img"]
+
+        profile.save()
+        return JsonResponse("成功", safe=False)
     else:
-        return HttpResponse("请使用GET或POST请求数据")
+        return JsonResponse("Invalid method!", safe=False)
