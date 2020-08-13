@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('User/', include('User.urls', namespace='User')),
+    path('Table/', include('Table.urls', namespace='Table')),
 ]
 
 # 配置媒体文件

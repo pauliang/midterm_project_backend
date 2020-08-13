@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'User',
+    'Table',
 ]
 
 MIDDLEWARE = [
@@ -79,8 +80,13 @@ WSGI_APPLICATION = 'DocWeb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'xxqdb',
+        'USER': 'root',
+        'PASSWORD': 'rjgcxxq',
+        'HOST': '39.97.101.50',
+        'PORT': '3306',
+        'TEST_CHARSET': 'utf-8',
     }
 }
 

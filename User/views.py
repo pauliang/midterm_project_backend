@@ -1,7 +1,6 @@
-from django.shortcuts import render, redirect
+
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, JsonResponse
-from .forms import UserLoginForm, UserRegisterForm, ProfileForm
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Profile
 from django.contrib.auth.models import User
@@ -66,8 +65,8 @@ def profile_edit(request, id):
 
     if request.method == 'POST':
         # 验证用户是否是本人
-        if request.user != user:
-            return JsonResponse("权限不足!", safe=False)
+        # if request.user != user:
+            # return JsonResponse("权限不足!", safe=False)
 
         # profile_form = ProfileForm(request.POST, request.FILES)
         # if profile_form.is_valid():
@@ -88,7 +87,6 @@ def profile_edit(request, id):
         # 如果图片存在FILES中
         # if 'img' in request.FILES:
             # profile.img = data["img"]
-
         profile.save()
         return JsonResponse("成功", safe=False)
     else:
