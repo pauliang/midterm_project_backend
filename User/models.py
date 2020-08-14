@@ -11,13 +11,13 @@ class Profile(models.Model):
     # 头像
     img = models.ImageField(upload_to='avatar/%Y%m%d/', blank=True)
     # 简介
-    introduction = models.TextField(max_length=200, blank=True)
+    introduction = models.TextField(max_length=200, blank=True, null=True)
     # 兴趣爱好
-    hobby = models.TextField(max_length=100, blank=True)
+    hobby = models.TextField(max_length=100, blank=True, null=True)
     # 年龄
-    age = models.IntegerField(blank=True, default=0)
+    age = models.IntegerField(blank=True, default=0, null=True)
     # 性别
-    gender = models.IntegerField(blank=True, default=0)
+    gender = models.IntegerField(blank=True, default=0, null=True)
 
     def __str__(self):
         return 'user {}'.format(self.user.username)
