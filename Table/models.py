@@ -20,3 +20,11 @@ class File(models.Model):
 
     def __str__(self):
         return self.doctitle
+
+
+class CollectList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="collected")
+    file = models.ForeignKey(File, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user
