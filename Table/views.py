@@ -54,10 +54,7 @@ def my_files(request, id):
         user = User.objects.get(id=id)
         # 获取user下的所有files
         files = user.files.all()  # files为related_name
-        ret = []
-        for file in files:
-            ret.append(file)
-        retfile = serializers.serialize("json", ret)
+        retfile = serializers.serialize("json", files)
         response = {"files": retfile}
     except User.DoesNotExist:  # 没有这个用户 返回空值
         files = None

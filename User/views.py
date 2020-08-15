@@ -2,6 +2,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
 from .models import Profile
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -63,11 +65,34 @@ def get_usernamelist(request):
         users = User.objects.all()
         for user in users:
             ret.append(user.username)
-        # retNames = serializers.serialize("json", ret)
         response = {'usernameList': ret}
         return JsonResponse(response)
     else:
         return JsonResponse("Invalid response", safe=False)
+
+
+def profile(request, id):
+    tmp = {}
+    ret = []
+    profile = Profile.objects.get(user_id=id)
+    user = User.objects.get(id=id)
+    users = User.objects.all()
+    namelist = []
+    for x in users:
+        namelist.append(x.username)
+    tmp['usernameList'] = namelist
+    tmp['id'] = user.id
+    tmp['username'] = user.username
+    tmp['age'] = profile.age
+    tmp['hobby'] = profile.hobby
+    tmp['introduction'] = profile.introduction
+    tmp['gender'] = profile.gender
+    tmp['email'] = user.email
+    tmp['phone'] = profile.phone
+    ret.append(tmp)
+
+    print(ret)
+    return JsonResponse(ret, safe=False)
 
 
 # @login_required(login_url='/User/login/')
@@ -79,43 +104,43 @@ def profile_edit(request, id):
     else:
         profile = Profile.objects.create(user=user)
 
-    asker_id = request.POST.get('id')
-    asker = User.objects.get(id=asker_id)
-    # print(asker)
-    # print(user)
+    # asker_id = request.POST.get('id')
+    # print(asker_id)
+    # asker = User.objects.get(id=asker_id)
+
     if request.method == 'POST':
         # 验证用户是否是本人
-        if asker != user:
-            ret = []
-            ret.append(user)
-            retUser = serializers.serialize("json", ret)
-            response = {'user': retUser}
-            return JsonResponse(response)
+        # if asker != user:
+            # ret = []
+            # ret.append(user)
+            # retUser = serializers.serialize("json", ret)
+            # response = {'user': retUser}
+            # return JsonResponse(response)
 
         # profile_form = ProfileForm(request.POST, request.FILES)
         # if profile_form.is_valid():
             # 取得清洗后的合法数据
-        else:
-            uname = request.POST.get('username')
+        # else:
+            # uname = request.POST.get('username')  先不管username!
             phone = request.POST.get('phone')
             intro = request.POST.get('introduction')
             gender = request.POST.get('gender')
             hobby = request.POST.get('hobby')
             age = request.POST.get('age')
             email = request.POST.get('email')
-            # print(uname)
-            # print(intro)
-            # print(hobby)
+
             profile.phone = phone
             profile.introduction = intro
             profile.age = age
             profile.gender = gender
             profile.hobby = hobby
-            user.username = uname
+            # user.username = uname
             user.email = email
             # 如果图片存在FILES中
             # if 'img' in request.FILES:
                 # profile.img = data["img"]
             profile.save()
             user.save()
+            print(profile.introduction)
+            print(user.email)
             return JsonResponse("成功", safe=False)
