@@ -74,8 +74,11 @@ def get_usernamelist(request):
 def profile(request, id):
     tmp = {}
     ret = []
-    profile = Profile.objects.get(user_id=id)
     user = User.objects.get(id=id)
+    if Profile.objects.filter(user_id=id).exists():
+        profile = Profile.objects.get(user_id=id)
+    else:
+        profile = Profile.objects.create(user=user)
     users = User.objects.all()
     namelist = []
     for x in users:

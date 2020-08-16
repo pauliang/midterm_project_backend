@@ -16,7 +16,10 @@ class File(models.Model):
     # group = ForeignKey()
     stat = models.IntegerField(default=0)
     admindoc = models.IntegerField(default=0)
-    deletetime = models.DateTimeField(auto_now=True)
+    deletetime = models.DateTimeField(blank=True, null=True)
+    lastauthor = models.ForeignKey(User, on_delete=models.CASCADE)
+    isedit = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.doctitle

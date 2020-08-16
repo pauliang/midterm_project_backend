@@ -29,3 +29,33 @@ bin/id/
 文档删除的状态 file.stat （file为一个文档对象）可分为： 
 -3：已被清空 不可恢复，即删除时间超过7天
 -2：在回收站中 可恢复
+
+5、收藏文档（2为返回收藏的文档）
+collect_file/
+参数: id: "用户id", file_id: "文档id"
+返回值：返回"success"代表收藏成功 ，返回"failed"代表收藏失败
+
+6、删除文档 (个人文档   指放入回收站）
+delete_file/
+参数: file_id："文档id"
+返回值：返回"success"代表删除成功 ，返回"failed"代表删除失败
+
+7、取消收藏文档
+not_collect/
+参数：id: "用户id", file_id: "文档id"
+返回值：返回"success"代表取消收藏成功 ，返回"failed"代表取消收藏失败
+
+8、删除回收站中某文档
+delete_bin_file/
+参数：file_id："文档id"
+返回值：返回"success"代表删除成功 ，返回"failed"代表删除失败
+
+9、清空回收站
+参数：数组[] 例如[1,2,3,4,5] 元素为各文档的file_id
+返回值：返回"success"代表清空成功 ，返回"failed"代表清空失败
+
+10、恢复文档
+recover_file/
+参数：file_id："文档id"
+返回值：返回"success"代表恢复成功 ，返回"failed"代表恢复失败
+
