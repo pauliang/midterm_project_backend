@@ -51,6 +51,7 @@ delete_bin_file/
 返回值：返回"success"代表删除成功 ，返回"failed"代表删除失败
 
 9、清空回收站
+delete_bin_all/
 参数：数组[] 例如[1,2,3,4,5] 元素为各文档的file_id
 返回值：返回"success"代表清空成功 ，返回"failed"代表清空失败
 

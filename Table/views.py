@@ -15,15 +15,16 @@ def index(request):
 def recent_files(request, id):  # 返回收藏的状态
     try:
         user = User.objects.get(id=id)
+        File.objects.create(doctitle="测试文档2", docintro="又要写后端了", doctext="啊啊啊小学期!", docname="开发日志3",
+                            author=user, lastauthor=user)
         # 获取user下的所有files
         files = user.files.all()  # files为related_name
         current_time = timezone.now()
         ret = []
-        for file in files:  # 加上if file.stat 某种条件
+        for file in files:  # 加上收藏情况
             tmp = {}
-            print(current_time)
-            print(file.lasttime)
-            if (current_time - file.lasttime).days <= 3:
+            if (current_time - file.lasttime).days <= 3 and file.stat > -2:
+                tmp['docnum'] = file.id
                 tmp['docname'] = file.docname
                 tmp['doctitle'] = file.doctitle
                 tmp['docintro'] = file.docintro
@@ -63,15 +64,16 @@ def my_files(request, id):  # 返回收藏的状态
         user = User.objects.get(id=id)
         # 获取user下的所有files
         files = user.files.all()  # files为related_name
-        for file in files:
-            # if file.stat 不是被删除的
-            tmp = {}
-            tmp['docname'] = file.docname
-            tmp['doctitle'] = file.doctitle
-            tmp['docintro'] = file.docintro
-            tmp['author'] = file.author_id
-            tmp['lasttime'] = file.lasttime
-            ret.append(tmp)
+        for file in files:  # # 加上收藏情况
+            if file.stat > -2:   # 不是被删除的
+                tmp = {}
+                tmp['docnum'] = file.id
+                tmp['docname'] = file.docname
+                tmp['doctitle'] = file.doctitle
+                tmp['docintro'] = file.docintro
+                tmp['author'] = file.author_id
+                tmp['lasttime'] = file.lasttime
+                ret.append(tmp)
     except User.DoesNotExist:  # 没有这个用户 返回空值
         ret = []
 
@@ -90,6 +92,7 @@ def bin_files(request, id):
                 if (current - file.deletetime).days > 7:  # 超过七天数据库删除
                     file.delete()
                     continue
+                tmp['docnum'] = file.id
                 tmp['docname'] = file.docname
                 tmp['doctitle'] = file.doctitle
                 tmp['docintro'] = file.docintro
@@ -106,10 +109,15 @@ def bin_files(request, id):
 def collect(request):
     id = request.POST.get('id')
     file_id = request.POST.get('file_id')
+    print(id)
+    print(file_id)
     user = User.objects.get(id=id)
     try:
         file = File.objects.get(id=file_id)
-        CollectList.objects.create(user=user, file=file)
+        if CollectList.objects.filter(user=user, file=file).exists():
+            return JsonResponse("success", safe=False)  # 收藏文档成功
+        else:
+            CollectList.objects.create(user=user, file=file)
     except File.DoesNotExist:
         return JsonResponse("failed", safe=False)  # 文档不存在
 
@@ -117,9 +125,10 @@ def collect(request):
 
 
 def delete_file(request):
-    file_id = request.POS.get('file_id')
+    file_id = request.POST.get('file_id')
     try:
         file = File.objects.get(id=file_id)
+        print(file)
         file.stat = -2
         file.deletetime = timezone.now()
         file.save()
@@ -128,7 +137,40 @@ def delete_file(request):
     return JsonResponse("success", safe=False)
 
 
-def cancel_collect(request):
+def cancel_collect(request):  # 取消收藏
+    return JsonResponse("success", safe=False)
+
+
+def recover_file(request):
+    file_id = request.POST.get('file_id')
+    try:
+        file = File.objects.get(id=file_id)
+        file.stat = 0
+        file.deletetime = None  # 重新恢复了
+        file.save()
+    except File.DoesNotExist:  # 要恢复的文档不存在
+        return JsonResponse("failed", safe=False)
+    return JsonResponse("success", safe=False)
+
+
+def delete_bin_file(request):
+    file_id = request.POST.get('file_id')
+    try:
+        file = File.objects.get(id=file_id)
+        file.delete()
+    except File.DoesNotExist:  # 要删除的文档不存在
+        return JsonResponse("failed", safe=False)
+    return JsonResponse("success", safe=False)
+
+
+def delete_bin_all(request):
+    file_array = request.POST.get('array')
+    for file in file_array:
+        try:
+            delete_file = File.objects.get(id=file.id)
+            delete_file.delete()
+        except File.DoesNotExist:
+            return JsonResponse("failed", safe=False)
     return JsonResponse("success", safe=False)
 
 
