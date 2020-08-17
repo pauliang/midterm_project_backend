@@ -60,3 +60,10 @@ recover_file/
 参数：file_id："文档id"
 返回值：返回"success"代表恢复成功 ，返回"failed"代表恢复失败
 
+
+11、创建文档
+new_file/
+参数：id："用户id"，file："文档内容"
+返回值：返回"success"代表创建成功 ，返回"failed"代表创建失败
+
+

@@ -77,8 +77,10 @@ def profile(request, id):
     user = User.objects.get(id=id)
     if Profile.objects.filter(user_id=id).exists():
         profile = Profile.objects.get(user_id=id)
+        print("get profile")
     else:
         profile = Profile.objects.create(user=user)
+        print("create profile!")
     users = User.objects.all()
     namelist = []
     for x in users:
@@ -94,7 +96,6 @@ def profile(request, id):
     tmp['phone'] = profile.phone
     ret.append(tmp)
 
-    print(ret)
     return JsonResponse(ret, safe=False)
 
 
