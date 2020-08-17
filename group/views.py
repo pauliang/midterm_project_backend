@@ -381,8 +381,12 @@ def send_notice(id,groupnum,op):
     for row in cur:
         groupname = row[0]
     content=username+" 已"+opc+"团队 "+groupname+"."
-    sql="insert into Noticelise values(,"+str(id)+",'"+content+"',now(),0)"
+    sql="select id from Joinlist where groupnum="+str(groupnum)+" and isadmin=1"
     cur.execute(sql)
+    for row in cur:
+        userid=row[0]
+        sql = "insert into Noticelise values(," + str(userid) + ",'" + content + "',now(),0)"
+        cur.execute(sql)
     cur.connection.commit()
     con.close()
     return 1
