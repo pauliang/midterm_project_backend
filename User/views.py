@@ -1,5 +1,6 @@
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import check_password, make_password
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -148,3 +149,15 @@ def profile_edit(request, id):
             print(profile.introduction)
             print(user.email)
             return JsonResponse("成功", safe=False)
+
+
+def change_password(request, id):
+    user = User.objects.get(id=id)
+    old_pwd = request.POST.get('formerPwd')
+    new_pwd = request.POST.get('newPwd')
+    if check_password(old_pwd, user.password):
+        user.password = make_password(new_pwd)
+        user.save()
+        return JsonResponse("success", safe=False)
+    else:
+        return JsonResponse("failed", safe=False)

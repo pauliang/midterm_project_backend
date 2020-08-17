@@ -15,8 +15,6 @@ def index(request):
 def recent_files(request, id):  # 返回收藏的状态
     try:
         user = User.objects.get(id=id)
-        File.objects.create(doctitle="测试文档2", docintro="又要写后端了", doctext="啊啊啊小学期!", docname="开发日志3",
-                            author=user, lastauthor=user)
         # 获取user下的所有files
         files = user.files.all()  # files为related_name
         current_time = timezone.now()
@@ -24,6 +22,8 @@ def recent_files(request, id):  # 返回收藏的状态
         for file in files:  # 加上收藏情况
             tmp = {}
             if (current_time - file.lasttime).days <= 3 and file.stat > -2:
+                if CollectList.objects.filter(file=file).exists():
+                    tmp['isCollected'] = True
                 tmp['docnum'] = file.id
                 tmp['docname'] = file.docname
                 tmp['doctitle'] = file.doctitle
@@ -46,6 +46,8 @@ def collect_files(request, id):
         for record in collectfiles:
             file = File.objects.get(id=record.file_id)  # 取得相应的文章
             tmp = {}
+            tmp['isCollected'] = True
+            tmp['docnum'] = file.id
             tmp['docname'] = file.docname
             tmp['doctitle'] = file.doctitle
             tmp['docintro'] = file.docintro
@@ -67,6 +69,8 @@ def my_files(request, id):  # 返回收藏的状态
         for file in files:  # # 加上收藏情况
             if file.stat > -2:   # 不是被删除的
                 tmp = {}
+                if CollectList.objects.filter(file=file).exists():
+                    tmp['isCollected'] = True
                 tmp['docnum'] = file.id
                 tmp['docname'] = file.docname
                 tmp['doctitle'] = file.doctitle
@@ -109,8 +113,8 @@ def bin_files(request, id):
 def collect(request):
     id = request.POST.get('id')
     file_id = request.POST.get('file_id')
-    print(id)
-    print(file_id)
+    # print(id)
+    # print(file_id)
     user = User.objects.get(id=id)
     try:
         file = File.objects.get(id=file_id)
@@ -138,6 +142,17 @@ def delete_file(request):
 
 
 def cancel_collect(request):  # 取消收藏
+    user_id = request.POST.get('id')
+    file_id = request.POST.get('file_id')
+    print(user_id)
+    print(file_id)
+    user = User.objects.get(id=user_id)
+    file = File.objects.get(id=file_id)
+    try:
+        collect_file = CollectList.objects.get(user=user, file=file)
+        collect_file.delete()
+    except CollectList.DoesNotExist:  # 收藏记录未找到
+        return JsonResponse("failed", safe=False)
     return JsonResponse("success", safe=False)
 
 
@@ -157,6 +172,7 @@ def delete_bin_file(request):
     file_id = request.POST.get('file_id')
     try:
         file = File.objects.get(id=file_id)
+        print(file.docname)
         file.delete()
     except File.DoesNotExist:  # 要删除的文档不存在
         return JsonResponse("failed", safe=False)
@@ -174,5 +190,16 @@ def delete_bin_all(request):
     return JsonResponse("success", safe=False)
 
 
+def create_file(request):
+    user_id = request.POST.get('id')
+    content = request.POST.get('content')
+    docname = request.POST.get('docname')
+    print(content)
+    print(docname)
+    user = User.objects.get(id=user_id)
+    file = File.new_file(docname, content, user)
+    file.save()
+    response = {'info': "success", 'docid': file.id}  # 返回一个文档id
+    return JsonResponse(response, safe=False)
 
 

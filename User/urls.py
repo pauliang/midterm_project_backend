@@ -12,4 +12,5 @@ urlpatterns = [
     path('edit/<int:id>/', views.profile_edit, name='edit'),  # 提交修改的个人信息
     path('profile/<int:id>/', views.profile, name='profile'),
     path('register/usernameList/', views.get_usernamelist, name='usernameList'),
+    path('change_password/<int:id>/', views.change_password, name='change_password'),  # 修改密码
 ]
