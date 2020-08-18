@@ -132,7 +132,7 @@ def delete_file(request):
     file_id = request.POST.get('file_id')
     try:
         file = File.objects.get(id=file_id)
-        print(file.docname)
+        print(file)
         file.stat = -2
         file.deletetime = timezone.now()
         file.save()
@@ -180,14 +180,19 @@ def delete_bin_file(request):
 
 
 def delete_bin_all(request):
-    file_array = request.POST.get('array')
-    for file in file_array:
-        try:
-            delete_file = File.objects.get(id=file.id)
-            delete_file.delete()
-        except File.DoesNotExist:
-            return JsonResponse("failed", safe=False)
-    return JsonResponse("success", safe=False)
+    if request.method == 'POST':
+        print(request.POST)
+
+        for filenum in request.POST:
+            # print(filenum)
+            file_id = request.POST.getlist(filenum)
+            # print(file_id[0])
+            try:
+                delete_file = File.objects.get(id=file_id[0])
+                delete_file.delete()
+            except File.DoesNotExist:
+                return JsonResponse("failed", safe=False)
+        return JsonResponse("success", safe=False)
 
 
 def create_file(request):

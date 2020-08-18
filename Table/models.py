@@ -18,12 +18,12 @@ class File(models.Model):
     admindoc = models.IntegerField(default=0)
     deletetime = models.DateTimeField(blank=True, null=True)
     lastauthor = models.ForeignKey(User, on_delete=models.CASCADE)
-    isedit = models.IntegerField(default=0)
+    isedit = models.IntegerField(default=1)
     groupnum = models.IntegerField(default=-1)
 
     @classmethod
     def new_file(cls, docname, content, author):
-        file = cls(docname=docname, doctext=content, author=author, lastauthor=author)
+        file = cls(docname=docname, doctitle=docname, doctext=content, author=author, lastauthor=author)
         return file
 
     def __str__(self):
