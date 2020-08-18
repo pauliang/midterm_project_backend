@@ -20,4 +20,6 @@ urlpatterns = [
     path('get_invitation_a/',views.get_invitation_a,name='get_invitation_a'),
     path('get_invitation_b/',views.get_invitation_b,name='get_invitation_b'),
     path('handle_invitation/',views.handle_invitation,name='handle_invitation'),
+    path('get_leader/',views.get_leader,name='get_leader'),
+    path('get_identity/',views.get_identity,name='get_identity'),
 ]

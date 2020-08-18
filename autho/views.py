@@ -21,7 +21,7 @@ def change_stat(request):
     cur=con.cursor()
     docnum=request.POST['docnum']
     stat=request.POST['stat']
-    sql="update Table_file set stat="+str(stat)+" where docnum="+str(docnum)
+    sql="update Table_file set stat="+str(stat)+" where id="+str(docnum)
     cur.execute(sql)
     cur.connection.commit()
     con.close()
@@ -56,8 +56,9 @@ def match_auth(request):
     con=pymysql.connect(host="39.97.101.50", port=3306, user="root", password="rjgcxxq", database="xxqdb", charset="utf8")
     cur=con.cursor()
     id=request.POST['id']
+    id=int(id)
     docnum=request.POST['docnum']
-    sql="select id from Table_file where id="+str(docnum)
+    sql="select author_id from Table_file where id="+str(docnum)
     cur.execute(sql)
     aid=0
     for row in cur:
@@ -80,7 +81,7 @@ def match_auth(request):
         elif docstat==0:rarr=[1,1,0]
         elif docstat==1:rarr=[1,0,0]
         elif docstat==3:
-            sql="select groupnum from Table_file where docnum="+str(docnum)
+            sql="select groupnum from Table_file where id="+str(docnum)
             cur.execute(sql)
             for row in cur:
                 g=row[0]
@@ -155,10 +156,32 @@ def change_owner(request):
     return JsonResponse(1,safe=False)
 
 
+def change_owner_b(request):
+    con=pymysql.connect(host="39.97.101.50", port=3306, user="root", password="rjgcxxq", database="xxqdb", charset="utf8")
+    cur=con.cursor()
+    id=request.POST['id']
+    groupnum=request.POST['groupnum']
+    sql="update Table_file set groupnum="+str(groupnum)+" where id="+str(id)
+    cur.execute(sql)
+    sql="delete from Table_file where id="+str(id)
+    cur.execute(sql)
+    change_stat_func(id, 2)
+    sql = "select id from Joinlist where groupnum=" + str(groupnum)
+    cur.execute(sql)
+    for row in cur:
+        uid = row[0]
+        set_user_auth_func(uid, id, 2)
+
+    cur.execute(sql)
+    cur.connection.commit()
+    con.close()
+    return JsonResponse(1,safe=False)
+
+
 def change_stat_func(docnum,stat):
     con=pymysql.connect(host="39.97.101.50", port=3306, user="root", password="rjgcxxq", database="xxqdb", charset="utf8")
     cur=con.cursor()
-    sql="update Table_file set stat="+str(stat)+" where docnum="+str(docnum)
+    sql="update Table_file set stat="+str(stat)+" where id="+str(docnum)
     cur.execute(sql)
     cur.connection.commit()
     con.close()
