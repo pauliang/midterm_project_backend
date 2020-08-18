@@ -13,4 +13,5 @@ urlpatterns = [
     path('match_edit/',views.match_edit,name='match_edit'),
     path('end_edit/',views.end_edit,name='end_edit'),
     path('get_groupnum/',views.get_groupnum,name='get_groupnum'),
+    path('get_group_docs/',views.get_group_docs,name="get_group_docs"),
 ]
