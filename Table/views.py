@@ -132,7 +132,7 @@ def delete_file(request):
     file_id = request.POST.get('file_id')
     try:
         file = File.objects.get(id=file_id)
-        print(file)
+        print(file.docname)
         file.stat = -2
         file.deletetime = timezone.now()
         file.save()

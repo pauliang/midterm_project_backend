@@ -27,7 +27,7 @@ class File(models.Model):
         return file
 
     def __str__(self):
-        return self.doctitle
+        return self.docname
 
 
 class CollectList(models.Model):
